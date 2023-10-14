@@ -343,7 +343,7 @@ function! s:fzf(name, opts, extra)
 endfunction
 
 let s:default_action = {
-  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-t': '10split',
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit' }
 
