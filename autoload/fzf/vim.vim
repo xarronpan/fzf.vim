@@ -611,8 +611,11 @@ function! fzf#vim#_recent_files()
 endfunction
 
 function! s:history_source(type)
-  let max  = histnr(a:type)
-  let fmt  = s:yellow(' %'.len(string(max)).'d ', 'Number')
+  let max = histnr(a:type)
+  if max <= 0
+    return ['No entries']
+  endif
+  let fmt = s:yellow(' %'.len(string(max)).'d ', 'Number')
   let list = filter(map(range(1, max), 'histget(a:type, - v:val)'), '!empty(v:val)')
   return extend([' :: Press '.s:magenta('CTRL-E', 'Special').' to edit'],
     \ map(list, 'printf(fmt, len(list) - v:key)." ".v:val'))
@@ -807,10 +810,16 @@ function! fzf#vim#_buflisted_sorted()
   return sort(s:buflisted(), 's:sort_buffers')
 endfunction
 
+" [query (string)], [bufnrs (list)], [spec (dict)], [fullscreen (bool)]
 function! fzf#vim#buffers(...)
   let [query, args] = (a:0 && type(a:1) == type('')) ?
         \ [a:1, a:000[1:]] : ['', a:000]
-  let sorted = fzf#vim#_buflisted_sorted()
+  if len(args) && type(args[0]) == s:TYPE.list
+    let [buffers; args] = args
+  else
+    let buffers = s:buflisted()
+  endif
+  let sorted = sort(buffers, 's:sort_buffers')
   let header_lines = '--header-lines=' . (bufnr('') == get(sorted, 0, 0) ? 1 : 0)
   let tabstop = len(max(sorted)) >= 4 ? 9 : 8
   return s:fzf('buffers', {
