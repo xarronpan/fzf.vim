@@ -1128,7 +1128,7 @@ function! fzf#vim#snippets(...)
   if !exists(':UltiSnipsEdit')
     return s:warn('UltiSnips not found')
   endif
-  let list = UltiSnips#SnippetsInCurrentScope()
+  let list = UltiSnips#SnippetsInCurrentScope(1)
   if empty(list)
     return s:warn('No snippets available here')
   endif
